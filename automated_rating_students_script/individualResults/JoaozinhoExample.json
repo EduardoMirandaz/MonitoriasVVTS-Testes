@@ -1,0 +1,14 @@
+{
+  "resultado": {
+    "elemento": "Classes de teste avaliadas.",
+    "instrucoesNaoExecutadas": "Instruções não executadas",
+    "coberturaInstrucoes": "Cobertura de instruções",
+    "ramificacoesNaoExecutadas": "Ramificações não executadas",
+    "coberturaRamificacoes": "Cobertura de ramificações",
+    "complexidadeCiclomaticaNaoCoberta": "Complexidade ciclomática não coberta",
+    "linhasNaoExecutadas": "Linhas não executadas",
+    "metodosNaoExecutados": "Métodos não executados",
+    "classesNaoExecutadas": "Classes não executadas",
+    "notaFinal": "Nota final estipulada com base nesses quesitos"
+  }
+}
