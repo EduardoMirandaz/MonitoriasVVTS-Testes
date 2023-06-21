@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import json
-
+from os import path, makedirs
+from constants import JACOCO_RESULTS_PATH
 
 def calculateStudentPoints(resultados):
     instructionsCoverage = resultados.get('coberturaInstrucoes')
@@ -43,8 +44,10 @@ def calculateStudentPoints(resultados):
 
 
 def getResultsTableFromHTML():
+
+    if not path.exists(JACOCO_RESULTS_PATH): return None
     # Carregar o arquivo HTML
-    with open('../Cal/target/site/jacoco/index.html', 'r') as file:
+    with open(JACOCO_RESULTS_PATH, 'r') as file:
         content = file.read()
 
     # Criar o objeto BeautifulSoup
@@ -56,8 +59,7 @@ def getResultsTableFromHTML():
     # Encontrar todos os elementos <td>
     return soup.find_all('tr')
 
-
-def main():
+def rateStudent(student):
 
     resultado = {
         "particaoAnalisadaDoCodigoDeTeste": "",
@@ -77,6 +79,12 @@ def main():
     }
 
     table_rows = getResultsTableFromHTML()
+
+    if not table_rows: 
+        with open("finalResultsV1.csv", "a+") as final_results_file:
+            final_results_file.write(student["nome"] + ';' + 'Não foi possível avaliar de forma automática' + '\n')
+        final_results_file.close()
+        return None
     
     # Iterar sobre os elementos encontrados
     for table_row in table_rows:
@@ -89,15 +97,18 @@ def main():
 
     # Adicionando a nota ao dicionário de informações
     resultado["nota"] = calculateStudentPoints(resultado)
+    resultado["nome"] = student["nome"]
+    resultado["nusp"] = student["nusp"]
 
-    with open("individualResults/nome_do_aluno.json", "w") as outfile:
+
+    # Verificar se o diretório existe e criar, se necessário
+    if not path.exists("IndividualResults"):
+        makedirs("IndividualResults")
+
+    with open("IndividualResults/" + '_'.join(student['nome'].split()) +".json", "w+") as outfile:
         json.dump(resultado, outfile)
 
     with open("finalResultsV1.csv", "a+") as final_results_file:
-        final_results_file.write('nome_do_aluno' + ';' + str(resultado['nota']) + '\n')
+        final_results_file.write(student["nome"] + ';' + str(resultado['nota']) + '\n')
 
-
-
-if __name__ == "__main__":
-    main()
 
