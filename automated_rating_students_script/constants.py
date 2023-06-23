@@ -14,9 +14,9 @@ JACOCO_RESULTS_PATH = '../Cal/target/site/jacoco/index.html'
 TARGET_PATH = '../Cal/target'
 
 ## SHELL COMMANDS
-GET_STUTEND_TEST_CLASS_AND_SEND_TO_TEST_JAVA_PACKAGE = f'find . -name "*[tT]est*.java" -exec grep -v \'^package\' {{}} \\; -exec cp {{}} {CAL_TEST_ABS_PATH} \\; -quit'
+GET_STUDEND_TEST_CLASS_AND_SEND_TO_TEST_JAVA_PACKAGE = f'find . -name "*[tT]est*.java" -exec grep -v \'^package\' {{}} \\; -exec cp {{}} {CAL_TEST_ABS_PATH} \\; -quit'
 
-IMPROVE_TEST_CLASS_FORMAT = f'sed -i \'/^package .*;/d\' {CAL_TEST_RELATIVE_PATH}'
+IMPROVE_TEST_CLASS_FORMAT = f"sed -i -e '/^package .*;/d' -e 's/class .*{{/class CalTest{{\\n/g' {CAL_TEST_RELATIVE_PATH}"
 
 INSTALL_TEST_ARTIFACTS_AND_EXECUTE = ['mvn', 'clean', 'install']
 

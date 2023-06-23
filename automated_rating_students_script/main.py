@@ -1,4 +1,5 @@
 import subprocess
+import shutil
 from os import path, makedirs, mkdir, remove, walk
 from constants import *
 from webscrappingEDisciplinas import StudentsFromWebscrapping
@@ -6,6 +7,7 @@ from requests import get
 from getAuthCookies import AuthCookies
 from extractCoverageFromJaCoCoHTML import rateStudent
 from json import load
+from time import sleep
 
 students = None
 
@@ -63,6 +65,20 @@ def extractAllZipFiles(download_folder):
                 remove(directory)
         break
     
+# def findTestArchive(student_folder):
+    
+#     comando = f'find {student_folder} -name "*[tT]est*.java" -exec grep -v \'^package\' {{}} \\;'
+#     resultado = subprocess.run(comando, shell=True, capture_output=True, text=True)
+#     print(student_folder)
+#     input()
+#     if resultado.returncode == 0:
+#         arquivos_encontrados = resultado.stdout.strip().split('\n')
+#         for arquivo in arquivos_encontrados:
+#             shutil.copy2(arquivo, CAL_TEST_ABS_PATH)
+#         print(f"{len(arquivos_encontrados)} arquivos copiados para {CAL_TEST_ABS_PATH}.")
+#     else:
+#         print("Erro ao executar o comando.")
+
 
 def treatStudentsFilesAndRunTests(student, download_folder):
     student_folder = '_'.join(student['nome'].split())
@@ -71,10 +87,11 @@ def treatStudentsFilesAndRunTests(student, download_folder):
     ## Try to find a test class .java and move it to CalTest path
     try:
         # Copy the Test.java file from the student to our project CalTest.java
-        subprocess.run(GET_STUTEND_TEST_CLASS_AND_SEND_TO_TEST_JAVA_PACKAGE, shell=True, cwd=path.join(download_folder, student_folder))
+        # findTestArchive(student_folder)
+        subprocess.run(GET_STUDEND_TEST_CLASS_AND_SEND_TO_TEST_JAVA_PACKAGE, shell=True, cwd=path.join(download_folder, student_folder))
         # delete the package of the .java test file if it exists
         subprocess.run(IMPROVE_TEST_CLASS_FORMAT, shell=True)
-
+        input()
         # executa os comandos que rodam os testes
         try:
             subprocess.run(INSTALL_TEST_ARTIFACTS_AND_EXECUTE, cwd=JAVA_PROGRAM_DIRECTORY_ROOT_PATH)
