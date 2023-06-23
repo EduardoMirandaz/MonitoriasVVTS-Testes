@@ -6,7 +6,7 @@ from json import dump
 class StudentsFromWebscrapping:
     
 
-    students = None
+    students = []
 
     @classmethod
     def getStudents(cls):
@@ -16,6 +16,7 @@ class StudentsFromWebscrapping:
         # Aqui deve ser indicado o url a página que contém as tarefas de todos os alunos
         response = get('https://edisciplinas.usp.br/mod/assign/view.php?id=4757395&action=grading', 
                     cookies= AuthCookies.getAuthDataFromEdisciplinas()).text
+
 
         # Criar o objeto BeautifulSoup
         soup = BeautifulSoup(response, 'html.parser')

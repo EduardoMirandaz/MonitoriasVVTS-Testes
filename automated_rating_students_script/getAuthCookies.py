@@ -11,6 +11,7 @@ class AuthCookies:
     cookies = None
 
     def getLoginData():
+        userInput = ''
         # Capturar dados do login
         try:
             userInput = next(open('loginUsp.txt', 'r'))

@@ -1,5 +1,4 @@
 import subprocess
-import shutil
 from os import path, makedirs, mkdir, remove, walk
 from constants import *
 from webscrappingEDisciplinas import StudentsFromWebscrapping
@@ -7,9 +6,6 @@ from requests import get
 from getAuthCookies import AuthCookies
 from extractCoverageFromJaCoCoHTML import rateStudent
 from json import load
-from time import sleep
-
-students = None
 
 def downloadAllTheTestArchives():
     downloads_directory = 'Downloads'
@@ -24,8 +20,7 @@ def downloadAllTheTestArchives():
             print(LINE_MARKER, COULD_NOT_FIND_STUDENTS_FILE)
 
     #For each student, download the zip file containing the java test code
-    students = StudentsFromWebscrapping.getStudents()
-    for student in students:
+    for student in StudentsFromWebscrapping.getStudents():
         # Create the directory if the directory downloads doesn't exist
         if not path.exists(downloads_directory): 
             makedirs(downloads_directory)
@@ -91,7 +86,6 @@ def treatStudentsFilesAndRunTests(student, download_folder):
         subprocess.run(GET_STUDEND_TEST_CLASS_AND_SEND_TO_TEST_JAVA_PACKAGE, shell=True, cwd=path.join(download_folder, student_folder))
         # delete the package of the .java test file if it exists
         subprocess.run(IMPROVE_TEST_CLASS_FORMAT, shell=True)
-        input()
         # executa os comandos que rodam os testes
         try:
             subprocess.run(INSTALL_TEST_ARTIFACTS_AND_EXECUTE, cwd=JAVA_PROGRAM_DIRECTORY_ROOT_PATH)
@@ -106,20 +100,21 @@ def main():
     downloads_directory, alreadyHasTheFilesDownloaded = downloadAllTheTestArchives()
     extractAllZipFiles(downloads_directory)
 
+    
 
     if(alreadyHasTheFilesDownloaded):
         if(path.exists('students.json')):
             print(LINE_MARKER, 'I found the students directory, recovering the data...')
             with open('students.json', 'r+') as students_file:
-                students = load(students_file)
+                StudentsFromWebscrapping.students = load(students_file)
 
-    if(not students):
+    if(not StudentsFromWebscrapping.students):
         print(LINE_MARKER, COULD_NOT_FIND_STUDENTS_FILE)
         students = StudentsFromWebscrapping.getStudents()
     else:
         print(LINE_MARKER, 'Students recovered!')
 
-    for student in students:
+    for student in StudentsFromWebscrapping.getStudents():
         print(LINE_MARKER, 'Running tests of:', student["nome"])
         testsSuccessful, errorMessage = treatStudentsFilesAndRunTests(student, downloads_directory)
         if(testsSuccessful):
