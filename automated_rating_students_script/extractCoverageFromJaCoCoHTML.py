@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import json
+from json import dump
 from os import path, makedirs
 from constants import JACOCO_RESULTS_PATH
 
@@ -84,7 +84,7 @@ def rateStudent(student):
         with open("finalResultsV1.csv", "a+") as final_results_file:
             final_results_file.write(student["nome"] + ';' + 'Não foi possível avaliar de forma automática' + '\n')
         final_results_file.close()
-        return None
+        return False
     
     # Iterar sobre os elementos encontrados
     for table_row in table_rows:
@@ -96,7 +96,7 @@ def rateStudent(student):
             }
 
     # Adicionando a nota ao dicionário de informações
-    resultado["nota"] = calculateStudentPoints(resultado)
+    resultado["nota"] = f"{calculateStudentPoints(resultado):.2f}"
     resultado["nome"] = student["nome"]
     resultado["nusp"] = student["nusp"]
 
@@ -106,9 +106,10 @@ def rateStudent(student):
         makedirs("IndividualResults")
 
     with open("IndividualResults/" + '_'.join(student['nome'].split()) +".json", "w+") as outfile:
-        json.dump(resultado, outfile)
+        dump(resultado, outfile)
 
     with open("finalResultsV1.csv", "a+") as final_results_file:
         final_results_file.write(student["nome"] + ';' + str(resultado['nota']) + '\n')
 
+    return True
 

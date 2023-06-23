@@ -1,17 +1,28 @@
 import subprocess
 from os import path, makedirs, mkdir, remove, walk
 from constants import *
-from webscrappingEDisciplinas import students
+from webscrappingEDisciplinas import StudentsFromWebscrapping
 from requests import get
-from getAuthCookies import cookies
+from getAuthCookies import AuthCookies
 from extractCoverageFromJaCoCoHTML import rateStudent
+from json import load
 
+students = None
 
 def downloadAllTheTestArchives():
     downloads_directory = 'Downloads'
-    flag_before_download_all_archives = input('Você deseja baixar os arquivos java.zip ou já os tem?\nCaso deseja baixar aperte enter.\nSe já tem baixado, digite "N"\n')
-    if(flag_before_download_all_archives.upper() == 'N') : return downloads_directory
+    flag_before_download_all_archives = '0'
+    while flag_before_download_all_archives != '' and flag_before_download_all_archives.upper() != "N":
+        flag_before_download_all_archives = input('\nVocê deseja baixar os arquivos de teste do edisciplinas ou já os tem?\nCaso deseja baixar aperte enter.\nSe já tem baixado, digite "N"\n')    
+    
+    if(flag_before_download_all_archives.upper() != ''):
+        if(path.exists(downloads_directory)):
+            return downloads_directory, True
+        else:
+            print(LINE_MARKER, COULD_NOT_FIND_STUDENTS_FILE)
+
     #For each student, download the zip file containing the java test code
+    students = StudentsFromWebscrapping.getStudents()
     for student in students:
         # Create the directory if the directory downloads doesn't exist
         if not path.exists(downloads_directory): 
@@ -20,17 +31,19 @@ def downloadAllTheTestArchives():
         filename = '_'.join(student['nome'].split())+'.zip'
         filepath = path.join(downloads_directory, filename)
 
-        response = get(student['arquivo_teste_java_zip'], cookies=cookies)
+        print(LINE_MARKER, 'Downloading the zip files')
+        response = get(student['arquivo_teste_java_zip'], 
+                       cookies = AuthCookies.getAuthDataFromEdisciplinas())
 
         if response.status_code == 200:
             with open(filepath, 'wb+') as file:
                 file.write(response.content)
-                print(filename, 'downloaded!')
+                print(LINE_MARKER, filename, 'downloaded!')
                 file.flush()
         else:
-            print('Failed to download resource for the student:',student['nome'])
+            print(LINE_MARKER, 'Failed to download resource for the student:',student['nome'])
 
-    return downloads_directory
+    return downloads_directory, False
     
 
 def extractAllZipFiles(download_folder):
@@ -53,7 +66,8 @@ def extractAllZipFiles(download_folder):
 
 def treatStudentsFilesAndRunTests(student, download_folder):
     student_folder = '_'.join(student['nome'].split())
-    print(path.exists(path.join(download_folder, student_folder)))
+    if not path.exists(path.join(download_folder, student_folder)):
+        return False, ZIP_FILE_NOT_FOUND
     ## Try to find a test class .java and move it to CalTest path
     try:
         # Copy the Test.java file from the student to our project CalTest.java
@@ -65,27 +79,41 @@ def treatStudentsFilesAndRunTests(student, download_folder):
         try:
             subprocess.run(INSTALL_TEST_ARTIFACTS_AND_EXECUTE, cwd=JAVA_PROGRAM_DIRECTORY_ROOT_PATH)
         except subprocess.CalledProcessError:
-            print(COULD_NOT_RUN_TESTS_MESSAGE)
-            return None
+            return False, COULD_NOT_RUN_TESTS_MESSAGE
     except subprocess.CalledProcessError:
-        print(TEST_CLASS_NOT_FOUND_MESSAGE)
-        return None        
-    return True
+        return False, TEST_CLASS_NOT_FOUND_MESSAGE
+    return True, student['nome'] + "'s tests sucessfull executed!"
 
 def main():
 
-    downloads_directory = downloadAllTheTestArchives()
+    downloads_directory, alreadyHasTheFilesDownloaded = downloadAllTheTestArchives()
     extractAllZipFiles(downloads_directory)
 
+
+    if(alreadyHasTheFilesDownloaded):
+        if(path.exists('students.json')):
+            print(LINE_MARKER, 'I found the students directory, recovering the data...')
+            with open('students.json', 'r+') as students_file:
+                students = load(students_file)
+
+    if(not students):
+        print(LINE_MARKER, COULD_NOT_FIND_STUDENTS_FILE)
+        students = StudentsFromWebscrapping.getStudents()
+    else:
+        print(LINE_MARKER, 'Students recovered!')
+
     for student in students:
-        print('Running tests of:', student["nome"])
-        if(treatStudentsFilesAndRunTests(student, downloads_directory)):
+        print(LINE_MARKER, 'Running tests of:', student["nome"])
+        testsSuccessful, errorMessage = treatStudentsFilesAndRunTests(student, downloads_directory)
+        if(testsSuccessful):
             if not rateStudent(student):
-                print(COULD_NOT_RUN_TESTS_MESSAGE)
+                print(LINE_MARKER, 'Could not correct the exercise of:', student["nome"] + LINE_MARKER)
         else:
-            print('Não foi possível corrigir o exercício do aluno:', student["nome"] + '\n\n\n=-=-=-=-=-=-=-=-=-=-=--=-=-=\n\n\n')
+            print(LINE_MARKER, errorMessage)
+        
         # deleta a pasta target
-        subprocess.run(DELETE_TARGET_FOLDER, shell=True)
+        if(path.exists(TARGET_PATH)):
+            subprocess.run(DELETE_TARGET_FOLDER, shell=True)
 
 if __name__ == "__main__":
     main()
