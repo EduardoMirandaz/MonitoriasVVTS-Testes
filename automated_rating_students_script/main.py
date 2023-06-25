@@ -4,7 +4,7 @@ from constants import *
 from webscrappingEDisciplinas import StudentsFromWebscrapping
 from requests import get
 from getAuthCookies import AuthCookies
-from extractCoverageFromJaCoCoHTML import rateStudent
+from rateStudents import RateStudent
 from json import load
 
 def downloadAllTheTestArchives():
@@ -114,11 +114,14 @@ def main():
     else:
         print(LINE_MARKER, 'Students recovered!')
 
+    
+    rateStudent = RateStudent()
+
     for student in StudentsFromWebscrapping.getStudents():
         print(LINE_MARKER, 'Running tests of:', student["nome"])
         testsSuccessful, errorMessage = treatStudentsFilesAndRunTests(student, downloads_directory)
         if(testsSuccessful):
-            if not rateStudent(student):
+            if not rateStudent.rateStudent(student):
                 print(LINE_MARKER, 'Could not correct the exercise of:', student["nome"] + LINE_MARKER)
         else:
             print(LINE_MARKER, errorMessage)

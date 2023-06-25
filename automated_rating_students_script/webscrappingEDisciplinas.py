@@ -2,11 +2,14 @@ from requests import get
 from getAuthCookies import AuthCookies
 from bs4 import BeautifulSoup
 from json import dump
+import constants 
 
 class StudentsFromWebscrapping:
     
 
     students = []
+    disciplina_avaliada = constants.DISCIPLINA_SSC0524_VERIFICACAO_VALIDACAO_E_TESTE_DE_SOFTWARE
+    disciplina_avaliada_code = constants.CODIGO_DISCIPLINA_SSC0524
 
     @classmethod
     def getStudents(cls):
@@ -14,7 +17,7 @@ class StudentsFromWebscrapping:
         if(cls.students): return cls.students
         
         # Aqui deve ser indicado o url a página que contém as tarefas de todos os alunos
-        response = get('https://edisciplinas.usp.br/mod/assign/view.php?id=4757395&action=grading', 
+        response = get(cls.disciplina_avaliada, 
                     cookies= AuthCookies.getAuthDataFromEdisciplinas()).text
 
 

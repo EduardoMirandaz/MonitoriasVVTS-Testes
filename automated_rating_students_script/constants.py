@@ -27,6 +27,14 @@ DELETE_TARGET_FOLDER = 'rm -r ' + TARGET_PATH
 AUTH_EDISCIPLINAS_URL = 'https://edisciplinas.usp.br/auth/shibboleth'
 
 
+CODIGO_DISCIPLINA_SCC0569 = 'SCC0569'
+CODIGO_DISCIPLINA_SSC0524 = 'SSC0524'
+
+DISCIPLINA_SSC0569_TESTE_E_INSPECAO_DE_SOFTWARE = 'https://edisciplinas.usp.br/mod/assign/view.php?id=4757121&action=grading'
+DISCIPLINA_SSC0524_VERIFICACAO_VALIDACAO_E_TESTE_DE_SOFTWARE = 'https://edisciplinas.usp.br/mod/assign/view.php?id=4757395&action=grading'
+
+
+
 ## MESSAGES
 TEST_CLASS_NOT_FOUND_MESSAGE = f" I couldn't found no java class with 'Test' in the name in the folder {DOWNLOADS_DIRECTORY_PATH} :("
 
