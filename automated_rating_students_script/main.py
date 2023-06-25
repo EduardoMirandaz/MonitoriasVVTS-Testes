@@ -59,21 +59,6 @@ def extractAllZipFiles(download_folder):
                 # delete the .zip archive
                 remove(directory)
         break
-    
-# def findTestArchive(student_folder):
-    
-#     comando = f'find {student_folder} -name "*[tT]est*.java" -exec grep -v \'^package\' {{}} \\;'
-#     resultado = subprocess.run(comando, shell=True, capture_output=True, text=True)
-#     print(student_folder)
-#     input()
-#     if resultado.returncode == 0:
-#         arquivos_encontrados = resultado.stdout.strip().split('\n')
-#         for arquivo in arquivos_encontrados:
-#             shutil.copy2(arquivo, CAL_TEST_ABS_PATH)
-#         print(f"{len(arquivos_encontrados)} arquivos copiados para {CAL_TEST_ABS_PATH}.")
-#     else:
-#         print("Erro ao executar o comando.")
-
 
 def treatStudentsFilesAndRunTests(student, download_folder):
     student_folder = '_'.join(student['nome'].split())
