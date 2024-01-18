@@ -1,4 +1,6 @@
-# MonitoriasVVTS-Testes
-Exercícios monitor de testes
+VVTS-Tests Tutoring
+Test Monitor Exercises
 
-Exercícios comentados e sugestões de solução propostas por mim enquanto monitor das disciplinas de Teste de Software no ICMC - Instituto de Ciências Matemáticas e Computação da USP (Universidade de São Paulo). Todos os exercícios aqui foram propostos pelo professor Dr. Márcio Delamaro, além das referências teóricas para a realização dos exercícios.
+Commented exercises and solution suggestions proposed by me as a monitor for the Software Testing disciplines at ICMC - Institute of Mathematical and Computer Sciences at USP (University of São Paulo). All exercises presented here were proposed by Professor Dr. Márcio Delamaro, along with theoretical references for the completion of the exercises.
+
+Furthermore, there is an automation created for the automatic correction and validation of Java projects.
